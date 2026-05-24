@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="ro" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DC AutoHire – Chirie Auto Chisinau</title>
+  <meta name="description" content="DC AutoHire – chirie auto in Chisinau si Cimislia. Rapid, simplu, fara griji. Livrare la Aeroport.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:#F4F3EF; --card:#FFFFFF; --card-alt:#ECEAE4; --border:#DDDBD3;
+      --text:#1A1917; --text-2:rgba(26,25,23,.55); --text-3:rgba(26,25,23,.38);
+      --red:#C1121F; --red-glow:rgba(193,18,31,.35);
+    }
+    .dark {
+      --bg:#080807; --card:#141413; --card-alt:#0E0E0D; --border:#252420;
+      --text:#F0EEE8; --text-2:rgba(240,238,232,.52); --text-3:rgba(240,238,232,.32);
+    }
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
+    body { background:var(--bg); color:var(--text); font-family:'DM Sans',system-ui,sans-serif;
+      -webkit-font-smoothing:antialiased; overflow-x:hidden; transition:background .35s, color .35s; }
+    ::selection { background:rgba(193,18,31,.28); }
+    ::-webkit-scrollbar { width:5px; }
+    ::-webkit-scrollbar-track { background:var(--bg); }
+    ::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
+    a { color:inherit; text-decoration:none; }
+    button { font-family:inherit; }
+    img { display:block; }
+
+    .container { max-width:1240px; margin:0 auto; padding:0 24px; }
+    @media(min-width:1024px){ .container { padding:0 40px; } }
+    .eyebrow { display:inline-flex; align-items:center; gap:8px; font-size:11px; font-weight:500;
+      letter-spacing:.18em; text-transform:uppercase; color:var(--red); margin-bottom:14px; }
+    .eyebrow::before { content:''; display:block; width:20px; height:1px; background:var(--red); }
+    .section { padding:96px 0; }
+    .section-title { font-family:'Cormorant Garamond',serif; font-size:clamp(2rem,4vw,3rem); font-weight:600; line-height:1.1; }
+    .section-desc { margin-top:16px; color:var(--text-2); font-size:16px; line-height:1.7; max-width:560px; }
+    .section-header { margin-bottom:56px; }
+    .btn-primary { padding:13px 28px; background:var(--red); color:#fff; font-size:13px; font-weight:500;
+      border-radius:999px; border:none; cursor:pointer; transition:transform .25s, box-shadow .25s; }
+    .btn-primary:hover { transform:translateY(-2px); box-shadow:0 8px 28px var(--red-glow); }
+    .btn-outline { padding:13px 28px; color:var(--text); font-size:13px; font-weight:500;
+      border:1px solid var(--border); border-radius:999px; background:none; cursor:pointer;
+      transition:border-color .25s, color .25s; }
+    .btn-outline:hover { border-color:var(--red); color:var(--red); }
+    .line-clamp-2 { display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+
+    /* NAVBAR */
+    .nav { position:fixed; top:0; left:0; right:0; height:68px; z-index:100; display:flex; align-items:center; transition:all .35s; }
+    .nav.scrolled { background:color-mix(in srgb, var(--bg) 88%, transparent);
+      backdrop-filter:blur(18px); border-bottom:1px solid var(--border); }
+    .nav-inner { display:flex; align-items:center; justify-content:space-between; width:100%; }
+    .nav-logo { display:flex; align-items:center; gap:10px; background:none; border:none; cursor:pointer; }
+    .nav-logo .dc { color:var(--red); font-family:'Cormorant Garamond',serif; font-size:22px; font-weight:700; }
+    .nav-logo .rest { color:var(--text); font-family:'Cormorant Garamond',serif; font-size:22px; font-weight:400; }
+    .nav-logo .sub { font-size:10px; letter-spacing:.08em; color:var(--text-3); display:block; margin-top:1px; }
+    .nav-links { display:none; align-items:center; gap:28px; }
+    @media(min-width:768px){ .nav-links { display:flex; } }
+    .nav-link { font-size:13px; color:var(--text-2); background:none; border:none; cursor:pointer;
+      position:relative; transition:color .25s; padding-bottom:2px; }
+    .nav-link::after { content:''; position:absolute; bottom:0; left:0; width:0; height:1px; background:var(--red); transition:width .25s; }
+    .nav-link:hover { color:var(--text); }
+    .nav-link:hover::after { width:100%; }
+    .nav-right { display:flex; align-items:center; gap:8px; }
+    .icon-btn { width:34px; height:34px; border-radius:50%; border:none; background:none;
+      color:var(--text-2); cursor:pointer; display:flex; align-items:center; justify-content:center; transition:color .2s, background .2s; }
+    .icon-btn:hover { color:var(--red); background:var(--card-alt); }
+    .hamburger { display:flex; flex-direction:column; gap:5px; padding:8px; background:none; border:none; cursor:pointer; }
+    .hamburger span { width:20px; height:2px; background:var(--red); border-radius:1px; }
+    @media(min-width:768px){ .hamburger { display:none; } }
+
+    /* MOBILE MENU */
+    .mob-menu { position:fixed; inset:0; z-index:200; display:flex; flex-direction:column;
+      align-items:center; justify-content:center; gap:28px; background:var(--bg);
+      opacity:0; pointer-events:none; transition:opacity .3s; }
+    .mob-menu.open { opacity:1; pointer-events:all; }
+    .mob-close { position:absolute; top:20px; right:20px; background:none; border:none; color:var(--text); cursor:pointer; }
+    .mob-link { font-family:'Cormorant Garamond',serif; font-size:28px; color:var(--text);
+      cursor:pointer; transition:color .2s; background:none; border:none; }
+    .mob-link:hover { color:var(--red); }
+
+    /* HERO */
+    .hero { position:relative; min-height:100vh; display:flex; flex-direction:column;
+      justify-content:center; background:var(--bg); overflow:hidden; }
+    .hero-grid { display:grid; grid-template-columns:1fr; gap:48px; align-items:center; padding:100px 0 60px; }
+    @media(min-width:1024px){ .hero-grid { grid-template-columns:1fr 1fr; gap:64px; } }
+    .hero-tag { font-size:11px; letter-spacing:.18em; text-transform:uppercase; color:var(--text-3);
+      margin-bottom:20px; display:flex; align-items:center; gap:8px; }
+    .hero-tag::before { content:''; width:24px; height:1px; background:var(--red); }
+    .hero-h1 { font-family:'Cormorant Garamond',serif; font-size:clamp(2.2rem,4.5vw,3.6rem);
+      font-weight:600; line-height:1.1; }
+    .hero-h1 .dim { color:var(--text-2); font-weight:400; }
+    .hero-desc { margin-top:20px; color:var(--text-2); font-size:15px; line-height:1.75; max-width:440px; }
+    .hero-btns { display:flex; flex-wrap:wrap; gap:14px; margin-top:32px; }
+    .hero-trust { display:flex; flex-wrap:wrap; gap:18px; margin-top:28px; font-size:12px; color:var(--text-3); }
+    .hero-trust span { display:flex; align-items:center; gap:5px; }
+    .trust-dot { width:4px; height:4px; border-radius:50%; background:var(--red); }
+    .hero-phone { display:inline-flex; align-items:center; gap:12px; margin-top:24px;
+      padding:10px 18px; border-radius:999px; border:1px solid var(--border); background:var(--card-alt); transition:all .3s; }
+    .hero-phone:hover { border-color:var(--red); background:rgba(193,18,31,.06); }
+    .phone-icon { width:34px; height:34px; border-radius:50%; background:rgba(193,18,31,.12);
+      display:flex; align-items:center; justify-content:center; color:var(--red); flex-shrink:0; }
+    .phone-label { font-size:10px; color:var(--text-3); letter-spacing:.1em; text-transform:uppercase; }
+    .phone-num { font-family:'Cormorant Garamond',serif; font-size:17px; font-weight:600; color:var(--text); }
+    .hero-phone:hover .phone-num { color:var(--red); }
+    .hero-stats { display:flex; gap:24px; flex-wrap:wrap; margin-top:32px; }
+    .stat-item { display:flex; flex-direction:column; }
+    .stat-num { font-family:'Cormorant Garamond',serif; font-size:28px; font-weight:700; line-height:1; }
+    .stat-num span { color:var(--red); }
+    .stat-label { font-size:11px; color:var(--text-3); margin-top:3px; }
+    .stat-divider { width:1px; background:var(--border); align-self:stretch; }
+    @media(max-width:640px){ .hero-stats { display:none; } }
+
+    /* HERO CAROUSEL */
+    .hero-car-wrap { position:relative; max-width:520px; margin:0 auto; width:100%; }
+    .hero-car-frame { position:relative; border-radius:20px; overflow:hidden; cursor:pointer;
+      aspect-ratio:4/3; background:linear-gradient(145deg, var(--card-alt), var(--card));
+      box-shadow:0 24px 64px rgba(0,0,0,.15); }
+    .hero-car-frame img { position:absolute; inset:0; width:100%; height:100%;
+      object-fit:contain; padding:16px; transition:transform .5s; }
+    .hero-car-frame:hover img { transform:scale(1.04); }
+    .vignette { position:absolute; inset:0; pointer-events:none;
+      background:radial-gradient(ellipse at center, transparent 40%, var(--bg) 100%); opacity:.5; }
+    .hero-car-info { position:absolute; bottom:-14px; left:14px; right:14px;
+      display:flex; align-items:center; justify-content:space-between;
+      padding:10px 14px; border-radius:12px;
+      background:rgba(255,255,255,.07); backdrop-filter:blur(14px); border:1px solid rgba(255,255,255,.1); }
+    .hero-dots { display:flex; gap:5px; margin-top:28px; justify-content:center; }
+    .hdot { width:7px; height:7px; border-radius:50%; background:var(--border); border:none; cursor:pointer; transition:all .3s; }
+    .hdot.active { width:18px; background:var(--red); }
+    .hero-arrow { position:absolute; top:50%; transform:translateY(-50%); z-index:10;
+      width:34px; height:34px; border-radius:50%; border:none; background:var(--card-alt);
+      display:flex; align-items:center; justify-content:center; color:var(--text);
+      cursor:pointer; opacity:0; transition:opacity .3s; }
+    .hero-car-wrap:hover .hero-arrow { opacity:1; }
+    .hero-arrow.prev { left:10px; }
+    .hero-arrow.next { right:10px; }
+
+    /* FLEET */
+    .fleet-section { background:var(--card-alt); }
+    .fleet-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(300px, 1fr)); gap:24px; }
+    .car-card { background:var(--card); border:1px solid var(--border); border-radius:16px;
+      overflow:hidden; transition:transform .3s, box-shadow .3s; }
+    .car-card:hover { transform:translateY(-4px); box-shadow:0 16px 48px rgba(0,0,0,.12); }
+    .car-img-wrap { position:relative; aspect-ratio:16/9; cursor:pointer; overflow:hidden; background:var(--card-alt); }
+    .car-img-wrap img { width:100%; height:100%; object-fit:cover; transition:transform .4s; }
+    .car-img-wrap:hover img { transform:scale(1.05); }
+    .car-img-placeholder { width:100%; height:100%; display:flex; align-items:center; justify-content:center; color:var(--text-3); }
+    .gallery-badge { position:absolute; top:10px; right:10px; background:rgba(0,0,0,.45);
+      backdrop-filter:blur(8px); color:#fff; font-size:10px; padding:4px 8px; border-radius:6px; }
+    .car-specs-bar { display:flex; border-bottom:1px solid var(--border); }
+    .spec-chip { flex:1; display:flex; flex-direction:column; align-items:center; padding:6px 4px;
+      border-right:1px solid var(--border); font-size:9px; color:var(--text-3); gap:2px; }
+    .spec-chip:last-child { border-right:none; }
+    .car-body { padding:16px; }
+    .car-head { display:flex; align-items:baseline; justify-content:space-between; gap:8px; }
+    .car-name { font-family:'Cormorant Garamond',serif; font-size:19px; font-weight:600; }
+    .car-power { font-size:11px; color:var(--red); font-weight:600; }
+    .car-meta { font-size:12px; color:var(--text-3); margin-top:4px; }
+    .car-desc { font-size:13px; color:var(--text-2); line-height:1.6; margin-top:10px; }
+    .desc-toggle { background:none; border:none; font-size:11px; color:var(--red); cursor:pointer; margin-top:4px; padding:0; }
+    .car-price-row { display:flex; align-items:baseline; gap:4px; margin-top:14px; }
+    .price-from { font-size:11px; color:var(--text-3); }
+    .price-num { font-family:'Cormorant Garamond',serif; font-size:26px; font-weight:700; }
+    .price-unit { font-size:12px; color:var(--text-3); }
+    .car-actions { display:flex; gap:8px; margin-top:14px; }
+    .car-btn { flex:1; padding:9px 10px; border-radius:8px; font-size:12px; font-weight:500;
+      border:1px solid var(--border); background:none; color:var(--text); cursor:pointer; transition:all .2s; }
+    .car-btn:hover { border-color:var(--red); color:var(--red); }
+    .car-btn.reserve { background:var(--red); border-color:var(--red); color:#fff; }
+    .car-btn.reserve:hover { box-shadow:0 4px 16px var(--red-glow); }
+
+    /* WHY */
+    .why-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(260px, 1fr)); gap:24px; }
+    .why-card { background:var(--card); border:1px solid var(--border); border-radius:14px;
+      padding:28px 24px; position:relative; overflow:hidden; transition:transform .3s, box-shadow .3s; }
+    .why-card:hover { transform:translateY(-3px); box-shadow:0 12px 40px rgba(0,0,0,.1); }
+    .why-card::before { content:''; position:absolute; top:0; left:0; width:3px; height:0; background:var(--red); transition:height .35s; }
+    .why-card:hover::before { height:100%; }
+    .why-icon { width:44px; height:44px; border-radius:10px; background:rgba(193,18,31,.1);
+      display:flex; align-items:center; justify-content:center; color:var(--red); margin-bottom:16px; }
+    .why-title { font-family:'Cormorant Garamond',serif; font-size:19px; font-weight:600; margin-bottom:8px; }
+    .why-desc { font-size:13px; color:var(--text-2); line-height:1.65; }
+
+    /* TESTIMONIALS */
+    .testimonials-section { background:var(--card-alt); }
+    .testimonials-wrap { position:relative; }
+    .t-card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:28px; }
+    .t-stars { color:var(--red); font-size:12px; letter-spacing:1px; }
+    .t-quote { font-family:'Cormorant Garamond',serif; font-size:18px; line-height:1.55; margin-top:12px; }
+    .t-quote::before { content:'\201C'; color:var(--red); font-size:3rem; line-height:0; vertical-align:-1rem; margin-right:4px; }
+    .t-author { display:flex; align-items:center; gap:12px; margin-top:20px; }
+    .t-avatar { width:38px; height:38px; border-radius:50%; background:rgba(193,18,31,.12);
+      display:flex; align-items:center; justify-content:center;
+      font-family:'Cormorant Garamond',serif; font-size:15px; font-weight:700; color:var(--red); }
+    .t-name { font-size:13px; font-weight:500; }
+    .t-loc { font-size:11px; color:var(--text-3); }
+    .t-nav { display:flex; gap:8px; margin-top:20px; justify-content:center; }
+    .t-dot { width:7px; height:7px; border-radius:50%; background:var(--border); border:none; cursor:pointer; transition:all .3s; }
+    .t-dot.active { width:18px; background:var(--red); }
+    .t-arrows { position:absolute; top:50%; transform:translateY(-50%); width:100%; display:flex; justify-content:space-between; pointer-events:none; }
+    .t-arrow { pointer-events:all; width:36px; height:36px; border-radius:50%; border:1px solid var(--border);
+      background:var(--card); display:flex; align-items:center; justify-content:center;
+      color:var(--text); cursor:pointer; transition:all .2s; }
+    .t-arrow:hover { border-color:var(--red); color:var(--red); }
+    .t-arrow.prev { margin-left:-18px; }
+    .t-arrow.next { margin-right:-18px; }
+
+    /* CONTACT */
+    .contact-grid { display:grid; grid-template-columns:1fr; gap:40px; }
+    @media(min-width:768px){ .contact-grid { grid-template-columns:1fr 1fr; } }
+    .contact-item { display:flex; align-items:center; gap:14px; padding:16px; border-radius:12px;
+      border:1px solid var(--border); background:var(--card); margin-bottom:12px; transition:border-color .25s; }
+    .contact-item:hover { border-color:var(--red); }
+    .contact-icon { width:40px; height:40px; border-radius:10px; background:rgba(193,18,31,.1);
+      display:flex; align-items:center; justify-content:center; color:var(--red); flex-shrink:0; }
+    .contact-label { font-size:14px; font-weight:500; }
+    .contact-sub { font-size:12px; color:var(--text-3); margin-top:2px; }
+    .social-row { display:flex; gap:10px; margin-top:16px; }
+    .social-btn { width:40px; height:40px; border-radius:10px; border:1px solid var(--border);
+      background:var(--card); display:flex; align-items:center; justify-content:center;
+      color:var(--text-2); transition:all .2s; }
+    .social-btn:hover { border-color:var(--red); color:var(--red); }
+    .quick-box { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:24px; }
+    .quick-box h3 { font-family:'Cormorant Garamond',serif; font-size:20px; font-weight:600; margin-bottom:8px; }
+    .quick-box p { font-size:13px; color:var(--text-2); margin-bottom:20px; }
+    .quick-btns { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    .qbtn { padding:12px; border-radius:10px; border:1px solid var(--border); background:var(--card-alt);
+      font-size:13px; font-weight:500; color:var(--text); cursor:pointer; text-align:center; transition:all .2s; }
+    .qbtn:hover { border-color:var(--red); color:var(--red); }
+    .qbtn.wa { background:#25D366; color:#fff; border-color:#25D366; }
+
+    /* FOOTER */
+    .footer { margin-top:64px; padding-top:40px; border-top:1px solid var(--border); }
+    .footer-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:32px; }
+    @media(max-width:640px){ .footer-grid { grid-template-columns:1fr; } }
+    .footer-logo { font-family:'Cormorant Garamond',serif; font-size:24px; margin-bottom:10px; }
+    .footer-logo .dc { color:var(--red); }
+    .footer-tagline { font-size:12px; color:var(--text-3); line-height:1.6; }
+    .footer-col-title { font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--text-3); margin-bottom:14px; font-weight:500; }
+    .footer-links { display:flex; flex-direction:column; gap:8px; }
+    .footer-links a, .footer-links button { font-size:13px; color:var(--text-2); background:none;
+      border:none; cursor:pointer; text-align:left; padding:0; transition:color .2s; }
+    .footer-links a:hover, .footer-links button:hover { color:var(--red); }
+    .footer-bottom { display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px;
+      margin-top:32px; padding:20px 0 32px; border-top:1px solid var(--border); font-size:11px; color:var(--text-3); }
+
+    /* FAB */
+    .fab { position:fixed; bottom:28px; right:28px; z-index:90; display:flex; flex-direction:column; align-items:flex-end; gap:10px; }
+    .fab-items { display:flex; flex-direction:column; gap:8px; align-items:flex-end; pointer-events:none; }
+    .fab-items.open { pointer-events:all; }
+    .fab-item { display:flex; align-items:center; gap:10px; opacity:0; transform:translateY(8px) scale(.92); transition:opacity .2s, transform .2s; }
+    .fab-items.open .fab-item { opacity:1; transform:none; }
+    .fab-items.open .fab-item:nth-child(1){transition-delay:.04s}
+    .fab-items.open .fab-item:nth-child(2){transition-delay:.08s}
+    .fab-items.open .fab-item:nth-child(3){transition-delay:.12s}
+    .fab-items.open .fab-item:nth-child(4){transition-delay:.16s}
+    .fab-items.open .fab-item:nth-child(5){transition-delay:.20s}
+    .fab-label { font-size:12px; font-weight:500; padding:4px 10px; border-radius:6px;
+      background:var(--card); border:1px solid var(--border); color:var(--text); white-space:nowrap; }
+    .fab-icon { width:42px; height:42px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#fff; flex-shrink:0; }
+    .fab-main { width:52px; height:52px; border-radius:50%; border:none; background:var(--red);
+      display:flex; align-items:center; justify-content:center; color:#fff; cursor:pointer;
+      box-shadow:0 6px 24px var(--red-glow); position:relative; transition:transform .25s; }
+    .fab-main:hover { transform:scale(1.06); }
+    .fab-pulse { position:absolute; inset:0; border-radius:50%; background:var(--red); opacity:.4; animation:pulse 2s ease-out infinite; }
+    @keyframes pulse { 0%{transform:scale(1);opacity:.4} 70%{transform:scale(1.5);opacity:0} 100%{transform:scale(1.5);opacity:0} }
+
+    /* MODALS */
+    .overlay { position:fixed; inset:0; z-index:300; display:flex; align-items:center; justify-content:center; padding:16px; }
+    .overlay-backdrop { position:absolute; inset:0; background:rgba(0,0,0,.75); backdrop-filter:blur(6px); cursor:pointer; }
+    .modal { position:relative; z-index:1; background:var(--card); border:1px solid var(--border);
+      border-radius:20px; width:100%; max-width:680px; max-height:90vh; overflow-y:auto; padding:28px; }
+    .modal-close { position:absolute; top:14px; right:14px; width:32px; height:32px; border-radius:50%;
+      border:1px solid var(--border); background:var(--card-alt); cursor:pointer;
+      display:flex; align-items:center; justify-content:center; color:var(--text-2); }
+    .modal-close:hover { color:var(--red); }
+    .modal-car-head { display:flex; align-items:center; gap:16px; margin-bottom:20px; }
+    .modal-img { width:120px; height:80px; border-radius:10px; object-fit:cover; background:var(--card-alt); }
+    .modal-car-name { font-family:'Cormorant Garamond',serif; font-size:24px; font-weight:600; }
+    .modal-car-sub { font-size:12px; color:var(--text-3); margin-top:4px; }
+    .modal-specs { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:16px 0; }
+    .modal-spec { display:flex; justify-content:space-between; padding:8px 12px; border-radius:8px; background:var(--card-alt); font-size:13px; }
+    .modal-spec .slabel { color:var(--text-3); }
+    .modal-spec .sval { font-weight:500; }
+    .pricing-table { width:100%; border-collapse:collapse; margin-top:16px; font-size:13px; }
+    .pricing-table th { text-align:left; padding:8px 12px; font-size:11px; font-weight:500;
+      letter-spacing:.06em; text-transform:uppercase; color:var(--text-3); border-bottom:1px solid var(--border); }
+    .pricing-table td { padding:8px 12px; border-bottom:1px solid var(--border); }
+    .pricing-table tr:last-child td { border-bottom:none; }
+    .price-col { font-family:'Cormorant Garamond',serif; font-size:17px; font-weight:700; color:var(--red); }
+    .modal-actions { display:flex; gap:10px; margin-top:20px; }
+    .gallery-body { position:relative; aspect-ratio:16/9; border-radius:12px; overflow:hidden; background:var(--card-alt); margin-bottom:12px; }
+    .gallery-body img { width:100%; height:100%; object-fit:contain; padding:8px; }
+    .gal-arrow { position:absolute; top:50%; transform:translateY(-50%); z-index:2;
+      width:36px; height:36px; border-radius:50%; border:none; background:rgba(0,0,0,.4);
+      display:flex; align-items:center; justify-content:center; color:#fff; cursor:pointer; }
+    .gal-arrow.prev { left:8px; }
+    .gal-arrow.next { right:8px; }
+    .gallery-thumbs { display:flex; gap:8px; overflow-x:auto; padding-bottom:4px; }
+    .gallery-thumbs img { width:70px; height:46px; border-radius:6px; object-fit:cover;
+      cursor:pointer; border:2px solid transparent; flex-shrink:0; transition:border-color .2s; }
+    .gallery-thumbs img.active { border-color:var(--red); }
+    .gal-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; }
+    .gal-title { font-family:'Cormorant Garamond',serif; font-size:20px; font-weight:600; }
+
+    /* LOADING */
+    .loading { display:flex; align-items:center; justify-content:center; padding:60px; color:var(--text-3); gap:12px; }
+    .spinner { width:20px; height:20px; border:2px solid var(--border); border-top-color:var(--red); border-radius:50%; animation:spin .7s linear infinite; }
+    @keyframes spin { to { transform:rotate(360deg); } }
+    .reveal { opacity:0; transform:translateY(24px); transition:opacity .6s, transform .6s; }
+    .reveal.visible { opacity:1; transform:none; }
+  </style>
+</head>
+<body>
+
+<nav class="nav" id="nav">
+  <div class="container nav-inner">
+    <button class="nav-logo" onclick="goTo('hero')">
+      <div>
+        <div><span class="dc">DC</span><span class="rest"> AutoHire</span></div>
+        <span class="sub">Chirie Auto · Chisinau</span>
+      </div>
+    </button>
+    <div class="nav-links">
+      <button class="nav-link" onclick="goTo('fleet')">Flota</button>
+      <button class="nav-link" onclick="goTo('whychooseus')">De ce noi</button>
+      <button class="nav-link" onclick="goTo('testimonials')">Recenzii</button>
+      <button class="nav-link" onclick="goTo('contact')">Contact</button>
+    </div>
+    <div class="nav-right">
+      <button class="icon-btn" onclick="toggleTheme()" title="Tema">
+        <svg id="themeIcon" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+      <button class="hamburger" onclick="openMob()"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+</nav>
+
+<div class="mob-menu" id="mobMenu">
+  <button class="mob-close" onclick="closeMob()">
+    <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>
+  </button>
+  <button class="mob-link" onclick="goTo('fleet');closeMob()">Flota</button>
+  <button class="mob-link" onclick="goTo('whychooseus');closeMob()">De ce noi</button>
+  <button class="mob-link" onclick="goTo('testimonials');closeMob()">Recenzii</button>
+  <button class="mob-link" onclick="goTo('contact');closeMob()">Contact</button>
+</div>
+
+<section class="hero" id="hero">
+  <div class="container">
+    <div class="hero-grid">
+      <div>
+        <div class="hero-tag">Chirie Auto · Chisinau &amp; Cimislia</div>
+        <h1 class="hero-h1">Rapid, simplu,<br><span class="dim">fara griji</span></h1>
+        <p class="hero-desc">Inchirieri auto in Chisinau si Cimislia, cu livrare la Aeroport. Preturi accesibile, automobile intretinute si rezervare rapida.</p>
+        <div class="hero-btns">
+          <button class="btn-primary" onclick="goTo('fleet')">Vezi automobilele</button>
+          <button class="btn-outline" onclick="goTo('contact')">Contacteaza-ne</button>
+        </div>
+        <div class="hero-trust">
+          <span><span class="trust-dot"></span>Fara depozit</span>
+          <span><span class="trust-dot"></span>Proces rapid</span>
+          <span><span class="trust-dot"></span>Livrare Aeroport</span>
+        </div>
+        <a href="tel:+37360079007" class="hero-phone">
+          <div class="phone-icon">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          </div>
+          <div>
+            <div class="phone-label">Suna acum</div>
+            <div class="phone-num">+373 600 79 007</div>
+          </div>
+        </a>
+        <div class="hero-stats" id="heroStats">
+          <div class="stat-item"><div class="stat-num" id="statCars">–</div><div class="stat-label">Automobile</div></div>
+          <div class="stat-divider"></div>
+          <div class="stat-item"><div class="stat-num">4<span>★</span></div><div class="stat-label">Rating clienti</div></div>
+          <div class="stat-divider"></div>
+          <div class="stat-item"><div class="stat-num">24<span>/7</span></div><div class="stat-label">Suport</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="hero-car-wrap">
+          <div class="hero-car-frame" id="heroFrame" onclick="openHeroGallery()">
+            <img id="heroImg" src="" alt="" style="display:none">
+            <div class="vignette"></div>
+            <div class="hero-car-info">
+              <div>
+                <div style="font-size:13px;font-weight:500" id="heroName">Se încarcă...</div>
+                <div style="font-size:11px;color:var(--text-2)" id="heroSub"></div>
+              </div>
+            </div>
+            <button class="hero-arrow prev" onclick="event.stopPropagation();prevHero()">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg>
+            </button>
+            <button class="hero-arrow next" onclick="event.stopPropagation();nextHero()">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+            </button>
+          </div>
+          <div class="hero-dots" id="heroDots"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section fleet-section" id="fleet">
+  <div class="container">
+    <div class="section-header reveal">
+      <p class="eyebrow">Flota Noastra</p>
+      <h2 class="section-title">Automobile pregatite pentru drum</h2>
+      <p class="section-desc">Toate automobilele sunt intretinute, asigurate si gata de plecare. Rezervare rapida prin WhatsApp sau telefon.</p>
+    </div>
+    <div id="fleetGrid"><div class="loading"><div class="spinner"></div> Se incarca flota...</div></div>
+  </div>
+</section>
+
+<section class="section" id="whychooseus">
+  <div class="container">
+    <div class="section-header reveal">
+      <p class="eyebrow">De ce noi</p>
+      <h2 class="section-title">Avantajele DC AutoHire</h2>
+      <p class="section-desc">Ne propunem sa oferim cea mai buna experienta de inchiriere auto din Moldova — transparenta, preturi corecte, automobile fiabile.</p>
+    </div>
+    <div class="why-grid">
+      <div class="why-card reveal"><div class="why-icon"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div><div class="why-title">Preturi corecte</div><div class="why-desc">Transparenta totala in preturi, fara costuri ascunse, fara surprize la final.</div></div>
+      <div class="why-card reveal"><div class="why-icon"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0 1 12 2.944a11.955 11.955 0 0 1-8.618 3.04A12.02 12.02 0 0 0 3 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg></div><div class="why-title">Automobile sigure</div><div class="why-desc">Fiecare automobil este verificat tehnic inainte de fiecare inchiriere.</div></div>
+      <div class="why-card reveal"><div class="why-icon"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div><div class="why-title">Livrare rapida</div><div class="why-desc">Livrare in Chisinau si la Aeroport in maxim 30 de minute.</div></div>
+      <div class="why-card reveal"><div class="why-icon"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div><div class="why-title">Fara depozit</div><div class="why-desc">Nu cerem depozit de garantie sau sume blocate pe card.</div></div>
+      <div class="why-card reveal"><div class="why-icon"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg></div><div class="why-title">Suport 24/7</div><div class="why-desc">Suntem disponibili oricand prin WhatsApp, telefon sau email.</div></div>
+      <div class="why-card reveal"><div class="why-icon"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg></div><div class="why-title">Curatenie garantata</div><div class="why-desc">Fiecare automobil este igienizat si curatat inainte de predare.</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="section testimonials-section" id="testimonials">
+  <div class="container">
+    <div class="section-header reveal">
+      <p class="eyebrow">Recenzii</p>
+      <h2 class="section-title">Ce spun clientii</h2>
+      <p class="section-desc">Fiecare calatorie este importanta pentru noi. Iata cateva impresii ale clientilor nostri.</p>
+    </div>
+    <div class="testimonials-wrap reveal">
+      <div class="t-arrows">
+        <button class="t-arrow prev" onclick="prevT()"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></button>
+        <button class="t-arrow next" onclick="nextT()"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></button>
+      </div>
+      <div style="overflow:hidden"><div id="tTrack"></div></div>
+      <div class="t-nav" id="tDots"></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="contact">
+  <div class="container">
+    <div class="section-header reveal">
+      <p class="eyebrow">Contact</p>
+      <h2 class="section-title">Hai sa vorbim</h2>
+      <p class="section-desc">Suntem aici sa te ajutam cu orice intrebare. Contacteaza-ne pentru rezervari sau detalii suplimentare.</p>
+    </div>
+    <div class="contact-grid">
+      <div class="reveal">
+        <a href="tel:+37360079007" class="contact-item">
+          <div class="contact-icon"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div>
+          <div><div class="contact-label">+373 600 79 007</div><div class="contact-sub">Sunati sau scrieti pe WhatsApp</div></div>
+        </a>
+        <a href="https://mail.google.com/mail/?view=cm&fs=1&to=dcautohire@gmail.com" target="_blank" rel="noopener" class="contact-item">
+          <div class="contact-icon"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><path d="m22 6-10 7L2 6"/></svg></div>
+          <div><div class="contact-label">dcautohire@gmail.com</div><div class="contact-sub">Raspuns in 24 ore</div></div>
+        </a>
+        <div class="contact-item">
+          <div class="contact-icon"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+          <div><div class="contact-label">Chisinau, Republica Moldova</div><div class="contact-sub">Livrare gratuita in oras</div></div>
+        </div>
+        <div class="social-row">
+          <a href="https://instagram.com/dc.autohire" target="_blank" rel="noopener" class="social-btn"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><path d="M17.5 6.5h.01"/></svg></a>
+          <a href="https://wa.me/37360079007" target="_blank" rel="noopener" class="social-btn"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg></a>
+          <a href="https://t.me/+37360079007" target="_blank" rel="noopener" class="social-btn"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="m22 2-7 20-4-9-9-4z"/><path d="M22 2 11 13"/></svg></a>
+          <a href="tel:+37360079007" class="social-btn"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg></a>
+        </div>
+      </div>
+      <div class="reveal">
+        <div class="quick-box">
+          <h3>Actiuni rapide</h3>
+          <p>Alege metoda preferata de contact si rezerva acum.</p>
+          <div class="quick-btns">
+            <a href="https://wa.me/37360079007" target="_blank" rel="noopener" class="qbtn wa">WhatsApp</a>
+            <a href="tel:+37360079007" class="qbtn">Sunati</a>
+            <a href="https://t.me/+37360079007" target="_blank" rel="noopener" class="qbtn">Telegram</a>
+            <button class="qbtn" onclick="openViber()">Viber</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="footer">
+      <div class="footer-grid">
+        <div>
+          <div class="footer-logo"><span class="dc">DC</span> AutoHire</div>
+          <p class="footer-tagline">Chirie auto in Chisinau &amp; Cimislia.<br>Rapid, simplu, fara griji.</p>
+        </div>
+        <div>
+          <div class="footer-col-title">Linkuri rapide</div>
+          <div class="footer-links">
+            <button onclick="goTo('fleet')">Flota</button>
+            <button onclick="goTo('whychooseus')">De ce noi</button>
+            <button onclick="goTo('testimonials')">Recenzii</button>
+            <button onclick="goTo('contact')">Contact</button>
+          </div>
+        </div>
+        <div>
+          <div class="footer-col-title">Contacte</div>
+          <div class="footer-links">
+            <a href="tel:+37360079007">+373 600 79 007</a>
+            <a href="mailto:dcautohire@gmail.com">dcautohire@gmail.com</a>
+            <a href="https://instagram.com/dc.autohire" target="_blank" rel="noopener">@dc.autohire</a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>&copy; 2025 DC AutoHire. Toate drepturile rezervate.</span>
+        <span>Chisinau, Republica Moldova</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="fab">
+  <div class="fab-items" id="fabItems">
+    <a href="https://wa.me/37360079007" target="_blank" rel="noopener" class="fab-item">
+      <span class="fab-label">WhatsApp</span><span class="fab-icon" style="background:#25D366;box-shadow:0 4px 14px #25D36650"><svg width="18" height="18" fill="none" stroke="#fff" stroke-width="2" viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg></span>
+    </a>
+    <a href="https://t.me/+37360079007" target="_blank" rel="noopener" class="fab-item">
+      <span class="fab-label">Telegram</span><span class="fab-icon" style="background:#0088CC;box-shadow:0 4px 14px #0088CC50"><svg width="18" height="18" fill="none" stroke="#fff" stroke-width="2" viewBox="0 0 24 24"><path d="m22 2-7 20-4-9-9-4z"/><path d="M22 2 11 13"/></svg></span>
+    </a>
+    <button class="fab-item" onclick="openViber();closeFab()" style="background:none;border:none;cursor:pointer">
+      <span class="fab-label">Viber</span><span class="fab-icon" style="background:#7360F2;box-shadow:0 4px 14px #7360F250"><svg width="18" height="18" fill="none" stroke="#fff" stroke-width="2" viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg></span>
+    </button>
+    <a href="tel:+37360079007" class="fab-item">
+      <span class="fab-label">Sunati</span><span class="fab-icon" style="background:var(--red);box-shadow:0 4px 14px var(--red-glow)"><svg width="18" height="18" fill="none" stroke="#fff" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg></span>
+    </a>
+  </div>
+  <button class="fab-main" onclick="toggleFab()">
+    <span class="fab-pulse" id="fabPulse"></span>
+    <svg id="fabIcon" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+  </button>
+</div>
+
+<div class="overlay" id="detailsOverlay" style="display:none" onclick="closeDetails(event)">
+  <div class="overlay-backdrop"></div>
+  <div class="modal" onclick="event.stopPropagation()">
+    <button class="modal-close" onclick="closeDetails()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    <div id="detailsBody"></div>
+  </div>
+</div>
+
+<div class="overlay" id="galleryOverlay" style="display:none" onclick="closeGallery(event)">
+  <div class="overlay-backdrop"></div>
+  <div class="modal" onclick="event.stopPropagation()" style="max-width:760px">
+    <button class="modal-close" onclick="closeGallery()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    <div class="gal-header">
+      <span class="gal-title" id="galTitle"></span>
+      <span style="font-size:12px;color:var(--text-3)" id="galCount"></span>
+    </div>
+    <div class="gallery-body">
+      <img id="galImg" src="" alt="">
+      <button class="gal-arrow prev" onclick="prevGal()"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></button>
+      <button class="gal-arrow next" onclick="nextGal()"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></button>
+    </div>
+    <div class="gallery-thumbs" id="galThumbs"></div>
+  </div>
+</div>
+
+<script>
+const TESTIMONIALS = [
+  {quote:'Am inchiriat Golf-ul pentru o saptamana. Masina a fost impecabila, procesul rapid si pretul foarte bun. Recomand!', author:'Andrei M.', loc:'Chisinau'},
+  {quote:'Cel mai bun serviciu de rent a car din Moldova. Am folosit DC AutoHire de cateva ori si de fiecare data excelent.', author:'Maria K.', loc:'Cimislia'},
+  {quote:'Ford Fusion perfect pentru excursia in familie. Spatios, confortabil si economic. Multumesc!', author:'Sergiu D.', loc:'Chisinau'},
+  {quote:'Rezervare in 5 minute pe WhatsApp, masina livrata la aeroport. Super serviciu!', author:'Elena B.', loc:'Iasi, Romania'},
+];
+
+let carsData = [];
+let heroIdx = 0, heroTimer;
+let tIdx = 0;
+let galCar = null, galIdx = 0;
+let fabOpen = false;
+let theme = localStorage.getItem('theme') || 'dark';
+
+// ── INIT ─────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', async () => {
+  applyTheme();
+  buildTestimonials();
+  initReveal();
+  await loadCars();
+  window.addEventListener('scroll', () => {
+    document.getElementById('nav').classList.toggle('scrolled', scrollY > 40);
+  });
+});
+
+// ── CARS API ──────────────────────────────────────────
+async function loadCars() {
+  try {
+    const res = await fetch('/api/cars');
+    carsData = await res.json();
+    document.getElementById('statCars').innerHTML = carsData.length + '<span>+</span>';
+    buildFleet();
+    buildHero();
+  } catch(e) {
+    document.getElementById('fleetGrid').innerHTML = '<div class="loading">Eroare la incarcarea flotei.</div>';
+  }
+}
+
+function getImgUrl(img) {
+  try { return JSON.parse(img.filename).url; } catch { return img.url || ''; }
+}
+function getThumbUrl(img) {
+  try { return JSON.parse(img.filename).thumb_url; } catch { return img.url || ''; }
+}
+
+function imgSrc(car) {
+  const main = car.images?.find(i => i.is_main) || car.images?.[0];
+  return main ? getThumbUrl(main) : '';
+}
+
+// ── HERO ──────────────────────────────────────────────
+function buildHero() {
+  const dots = document.getElementById('heroDots');
+  dots.innerHTML = carsData.map((_,i) => `<button class="hdot ${i===0?'active':''}" onclick="goHero(${i})"></button>`).join('');
+  updateHero();
+  heroTimer = setInterval(nextHero, 5000);
+}
+function updateHero() {
+  if (!carsData.length) return;
+  const c = carsData[heroIdx];
+  const src = imgSrc(c);
+  const img = document.getElementById('heroImg');
+  if (src) { img.src = src; img.style.display = ''; }
+  else img.style.display = 'none';
+  document.getElementById('heroName').textContent = c.name;
+  document.getElementById('heroSub').textContent = `${c.power} – ${c.fuel} – ${c.body_type}`;
+  document.querySelectorAll('.hdot').forEach((d,i) => d.classList.toggle('active', i===heroIdx));
+}
+function nextHero() { heroIdx=(heroIdx+1)%carsData.length; updateHero(); }
+function prevHero() { heroIdx=(heroIdx-1+carsData.length)%carsData.length; updateHero(); }
+function goHero(i) { heroIdx=i; updateHero(); clearInterval(heroTimer); heroTimer=setInterval(nextHero,5000); }
+function openHeroGallery() { if(carsData.length) openGallery(carsData[heroIdx]); }
+
+// ── FLEET ─────────────────────────────────────────────
+function buildFleet() {
+  if (!carsData.length) {
+    document.getElementById('fleetGrid').innerHTML = '<div class="loading">Nu exista automobile in flota momentan.</div>';
+    return;
+  }
+  document.getElementById('fleetGrid').innerHTML = carsData.map(car => {
+    const src = imgSrc(car);
+    const bestPrice = car.prices?.length ? Math.min(...car.prices.map(p=>p.price)) : '–';
+    return `
+      <div class="car-card reveal">
+        <div class="car-img-wrap" onclick="openGallery(carsData.find(c=>c.id===${car.id}))">
+          ${src ? `<img src="${src}" alt="${car.name}" loading="lazy">` : `<div class="car-img-placeholder"><svg width="48" height="48" fill="none" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg></div>`}
+          <div class="car-overlay"></div>
+          ${car.images?.length ? `<div class="gallery-badge">${car.images.length} poze</div>` : ''}
+        </div>
+        <div class="car-specs-bar">
+          <div class="spec-chip"><span>⛽</span><span>${car.fuel}</span></div>
+          <div class="spec-chip"><span>⚙️</span><span>${car.gearbox.split(' ')[0]}</span></div>
+          <div class="spec-chip"><span>👤</span><span>${car.seats} loc.</span></div>
+          <div class="spec-chip"><span>🚗</span><span>${car.body_type}</span></div>
+        </div>
+        <div class="car-body">
+          <div class="car-head">
+            <span class="car-name">${car.name}</span>
+            <span class="car-power">${car.power}</span>
+          </div>
+          <div class="car-meta">${car.year} · ${car.gearbox}</div>
+          <p class="car-desc line-clamp-2" id="desc-${car.id}">${car.description || ''}</p>
+          ${car.description ? `<button class="desc-toggle" id="dtog-${car.id}" onclick="toggleDesc(${car.id})">mai mult...</button>` : ''}
+          <div class="car-price-row">
+            <span class="price-from">de la</span>
+            <span class="price-num">${bestPrice}€</span>
+            <span class="price-unit">/zi</span>
+          </div>
+          <div class="car-actions">
+            <button class="car-btn" onclick="openDetails(${car.id})">Detalii</button>
+            <button class="car-btn" onclick="openGallery(carsData.find(c=>c.id===${car.id}))">Galerie</button>
+            <a href="https://wa.me/37360079007" target="_blank" rel="noopener" class="car-btn reserve">Rezerva</a>
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+  initReveal();
+}
+
+function toggleDesc(id) {
+  const el = document.getElementById('desc-'+id);
+  const btn = document.getElementById('dtog-'+id);
+  const c = el.classList.toggle('line-clamp-2');
+  btn.textContent = c ? 'mai mult...' : 'mai putin...';
+}
+
+// ── DETALII ───────────────────────────────────────────
+function openDetails(id) {
+  const car = carsData.find(c=>c.id===id); if(!car) return;
+  const src = imgSrc(car);
+  const specRows = [
+    {l:'Motor', v:car.engine}, {l:'Putere', v:car.power}, {l:'Transmisie', v:car.gearbox},
+    {l:'Combustibil', v:car.fuel}, {l:'Tractiune', v:car.drive}, {l:'Consum', v:car.consumption}, {l:'Locuri', v:car.seats}
+  ].filter(s=>s.v);
+  document.getElementById('detailsBody').innerHTML = `
+    <div class="modal-car-head">
+      ${src ? `<img class="modal-img" src="${car.images.find(i=>i.is_main) ? getImgUrl(car.images.find(i=>i.is_main)) : car.images[0] ? getImgUrl(car.images[0]) : ''}" alt="${car.name}">` : ''}
+      <div><div class="modal-car-name">${car.name}</div><div class="modal-car-sub">${car.year} · ${car.power}</div></div>
+    </div>
+    ${car.description ? `<p style="font-size:14px;color:var(--text-2);line-height:1.7;margin-bottom:8px">${car.description}</p>` : ''}
+    <div class="modal-specs">${specRows.map(s=>`<div class="modal-spec"><span class="slabel">${s.l}</span><span class="sval">${s.v}</span></div>`).join('')}</div>
+    ${car.prices?.length ? `
+    <div style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--text-3);margin:16px 0 8px;font-weight:500">Tarifare</div>
+    <table class="pricing-table">
+      <thead><tr><th>Perioada</th><th>Pret/zi</th></tr></thead>
+      <tbody>${car.prices.map(p=>`<tr><td>${p.period}</td><td class="price-col">${p.price}€</td></tr>`).join('')}</tbody>
+    </table>` : ''}
+    <div class="modal-actions">
+      <a href="https://wa.me/37360079007" target="_blank" rel="noopener" class="btn-primary">Rezerva pe WhatsApp</a>
+      <button class="btn-outline" onclick="closeDetails();openGallery(carsData.find(c=>c.id===${car.id}))">Galerie</button>
+    </div>`;
+  document.getElementById('detailsOverlay').style.display='flex';
+  document.body.style.overflow='hidden';
+}
+function closeDetails(e) {
+  if (e && !e.target.classList.contains('overlay-backdrop')) return;
+  document.getElementById('detailsOverlay').style.display='none';
+  document.body.style.overflow='';
+}
+
+// ── GALERIE ───────────────────────────────────────────
+function openGallery(car) {
+  if (!car) return;
+  galCar = car; galIdx = 0;
+  document.getElementById('galTitle').textContent = car.name;
+  updateGal(); buildGalThumbs();
+  document.getElementById('galleryOverlay').style.display='flex';
+  document.body.style.overflow='hidden';
+}
+function updateGal() {
+  if (!galCar?.images?.length) return;
+  const img = galCar.images[galIdx];
+  document.getElementById('galImg').src = getImgUrl(img);
+  document.getElementById('galCount').textContent = (galIdx+1)+' / '+galCar.images.length;
+  document.querySelectorAll('.gallery-thumbs img').forEach((t,i)=>t.classList.toggle('active',i===galIdx));
+}
+function buildGalThumbs() {
+  document.getElementById('galThumbs').innerHTML = (galCar?.images||[]).map((img,i)=>
+    `<img src="${getThumbUrl(img)}" class="${i===0?'active':''}" onclick="galIdx=${i};updateGal()" loading="lazy">`).join('');
+}
+function nextGal() { galIdx=(galIdx+1)%galCar.images.length; updateGal(); }
+function prevGal() { galIdx=(galIdx-1+galCar.images.length)%galCar.images.length; updateGal(); }
+function closeGallery(e) {
+  if (e && !e.target.classList.contains('overlay-backdrop')) return;
+  document.getElementById('galleryOverlay').style.display='none';
+  document.body.style.overflow='';
+}
+
+// ── TESTIMONIALE ──────────────────────────────────────
+function buildTestimonials() {
+  document.getElementById('tTrack').innerHTML = TESTIMONIALS.map((t,i)=>`
+    <div class="t-card" id="tc-${i}" style="${i===0?'':'display:none'}">
+      <div class="t-stars">★★★★★</div>
+      <div class="t-quote">${t.quote}</div>
+      <div class="t-author">
+        <div class="t-avatar">${t.author[0]}</div>
+        <div><div class="t-name">${t.author}</div><div class="t-loc">${t.loc}</div></div>
+      </div>
+    </div>`).join('');
+  document.getElementById('tDots').innerHTML = TESTIMONIALS.map((_,i)=>
+    `<button class="t-dot ${i===0?'active':''}" onclick="goT(${i})"></button>`).join('');
+}
+function showT(i) {
+  document.querySelectorAll('[id^="tc-"]').forEach(el=>el.style.display='none');
+  document.getElementById('tc-'+i).style.display='block';
+  document.querySelectorAll('.t-dot').forEach((d,j)=>d.classList.toggle('active',j===i));
+  tIdx=i;
+}
+function nextT(){ showT((tIdx+1)%TESTIMONIALS.length); }
+function prevT(){ showT((tIdx-1+TESTIMONIALS.length)%TESTIMONIALS.length); }
+function goT(i){ showT(i); }
+
+// ── FAB ───────────────────────────────────────────────
+function toggleFab() {
+  fabOpen=!fabOpen;
+  document.getElementById('fabItems').classList.toggle('open',fabOpen);
+  document.getElementById('fabPulse').style.display=fabOpen?'none':'block';
+  document.getElementById('fabIcon').innerHTML=fabOpen
+    ?'<path d="M18 6 6 18M6 6l12 12"/>'
+    :'<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>';
+}
+function closeFab(){ fabOpen=true; toggleFab(); }
+
+// ── UTILS ─────────────────────────────────────────────
+function goTo(id){ document.getElementById(id)?.scrollIntoView({behavior:'smooth'}); }
+function openViber(){ window.open(/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)?'viber://chat?number=%2B37360079007':'https://www.viber.com/en/','_blank'); }
+function toggleTheme(){ theme=theme==='dark'?'light':'dark'; localStorage.setItem('theme',theme); applyTheme(); }
+function applyTheme(){
+  document.documentElement.classList.toggle('dark',theme==='dark');
+  document.getElementById('themeIcon').innerHTML=theme==='dark'
+    ?'<circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>'
+    :'<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>';
+}
+function openMob(){ document.getElementById('mobMenu').classList.add('open'); }
+function closeMob(){ document.getElementById('mobMenu').classList.remove('open'); }
+function initReveal(){
+  const obs=new IntersectionObserver(e=>e.forEach(x=>{if(x.isIntersecting){x.target.classList.add('visible');obs.unobserve(x.target)}}),{threshold:.1});
+  document.querySelectorAll('.reveal:not(.visible)').forEach(el=>obs.observe(el));
+}
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){ closeDetails(); closeGallery(); closeMob(); }
+  if(document.getElementById('galleryOverlay').style.display!=='none'){
+    if(e.key==='ArrowRight') nextGal();
+    if(e.key==='ArrowLeft') prevGal();
+  }
+});
+</script>
+</body>
+</html>

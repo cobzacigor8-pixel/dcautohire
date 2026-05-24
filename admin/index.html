@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DC AutoHire – Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:#0F0F0E; --sidebar:#141413; --card:#1A1A19; --card-alt:#1F1F1E;
+      --border:#2A2A28; --text:#F0EEE8; --text-2:rgba(240,238,232,.55); --text-3:rgba(240,238,232,.32);
+      --red:#C1121F; --red-light:rgba(193,18,31,.15); --green:#22c55e; --green-light:rgba(34,197,94,.15);
+      --yellow:#eab308; --radius:10px;
+    }
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:'DM Sans',system-ui,sans-serif; background:var(--bg); color:var(--text);
+      -webkit-font-smoothing:antialiased; min-height:100vh; }
+    a { color:inherit; text-decoration:none; }
+    button { font-family:inherit; cursor:pointer; }
+    img { display:block; }
+    input, textarea, select { font-family:inherit; }
+
+    /* LOGIN */
+    #loginScreen { display:flex; align-items:center; justify-content:center; min-height:100vh; background:var(--bg); }
+    .login-box { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:40px; width:100%; max-width:380px; }
+    .login-logo { font-size:24px; font-weight:600; margin-bottom:8px; }
+    .login-logo span { color:var(--red); }
+    .login-sub { font-size:13px; color:var(--text-3); margin-bottom:32px; }
+    .login-err { background:var(--red-light); border:1px solid var(--red); color:#ff6b6b; font-size:13px;
+      padding:10px 14px; border-radius:8px; margin-bottom:16px; display:none; }
+
+    /* LAYOUT */
+    #app { display:none; min-height:100vh; }
+    .layout { display:grid; grid-template-columns:240px 1fr; min-height:100vh; }
+    @media(max-width:768px){ .layout { grid-template-columns:1fr; } }
+
+    /* SIDEBAR */
+    .sidebar { background:var(--sidebar); border-right:1px solid var(--border); display:flex; flex-direction:column; position:sticky; top:0; height:100vh; overflow-y:auto; }
+    .sidebar-logo { padding:24px 20px 16px; border-bottom:1px solid var(--border); }
+    .sidebar-logo .name { font-size:18px; font-weight:600; }
+    .sidebar-logo .name span { color:var(--red); }
+    .sidebar-logo .sub { font-size:11px; color:var(--text-3); margin-top:2px; }
+    .sidebar-nav { padding:16px 12px; flex:1; display:flex; flex-direction:column; gap:4px; }
+    .nav-item { display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:8px;
+      font-size:13px; color:var(--text-2); border:none; background:none; width:100%; text-align:left;
+      transition:all .2s; }
+    .nav-item:hover { background:var(--card-alt); color:var(--text); }
+    .nav-item.active { background:var(--red-light); color:var(--red); }
+    .nav-item svg { flex-shrink:0; }
+    .sidebar-footer { padding:16px 12px; border-top:1px solid var(--border); display:flex; flex-direction:column; gap:8px; }
+    .sidebar-user { font-size:12px; color:var(--text-3); padding:0 4px; }
+    .btn-logout { display:flex; align-items:center; gap:8px; padding:9px 12px; border-radius:8px;
+      font-size:13px; color:var(--text-2); border:1px solid var(--border); background:none; width:100%; transition:all .2s; }
+    .btn-logout:hover { border-color:var(--red); color:var(--red); }
+
+    /* MAIN */
+    .main { padding:32px; overflow-x:hidden; }
+    @media(max-width:768px){ .main { padding:16px; } }
+    .page { display:none; }
+    .page.active { display:block; }
+    .page-title { font-size:22px; font-weight:600; margin-bottom:4px; }
+    .page-sub { font-size:13px; color:var(--text-3); margin-bottom:28px; }
+
+    /* FORM ELEMENTS */
+    .form-group { display:flex; flex-direction:column; gap:6px; }
+    .form-label { font-size:12px; font-weight:500; color:var(--text-2); letter-spacing:.04em; }
+    .form-input { background:var(--card-alt); border:1px solid var(--border); border-radius:8px;
+      padding:10px 12px; font-size:13px; color:var(--text); transition:border-color .2s; outline:none; }
+    .form-input:focus { border-color:var(--red); }
+    .form-input::placeholder { color:var(--text-3); }
+    textarea.form-input { resize:vertical; min-height:80px; }
+    select.form-input { appearance:none; }
+    .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    @media(max-width:600px){ .form-grid { grid-template-columns:1fr; } }
+    .form-grid-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px; }
+    @media(max-width:700px){ .form-grid-3 { grid-template-columns:1fr 1fr; } }
+
+    /* BUTTONS */
+    .btn { padding:9px 18px; border-radius:8px; font-size:13px; font-weight:500; border:none; transition:all .2s; }
+    .btn-primary { background:var(--red); color:#fff; }
+    .btn-primary:hover { opacity:.88; }
+    .btn-secondary { background:var(--card-alt); color:var(--text); border:1px solid var(--border); }
+    .btn-secondary:hover { border-color:var(--text-2); }
+    .btn-danger { background:var(--red-light); color:#ff6b6b; border:1px solid rgba(193,18,31,.3); }
+    .btn-danger:hover { background:var(--red); color:#fff; }
+    .btn-sm { padding:6px 12px; font-size:12px; }
+    .btn-icon { width:32px; height:32px; padding:0; display:flex; align-items:center; justify-content:center; border-radius:6px; }
+
+    /* CARDS */
+    .card { background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:20px; margin-bottom:16px; }
+    .card-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
+    .card-title { font-size:14px; font-weight:600; }
+
+    /* CAR LIST */
+    .car-list { display:flex; flex-direction:column; gap:12px; }
+    .car-row { background:var(--card); border:1px solid var(--border); border-radius:var(--radius);
+      display:flex; align-items:center; gap:16px; padding:14px 16px; transition:border-color .2s; }
+    .car-row:hover { border-color:var(--text-3); }
+    .car-row-img { width:80px; height:54px; border-radius:6px; object-fit:cover; background:var(--card-alt); flex-shrink:0; overflow:hidden; display:flex; align-items:center; justify-content:center; color:var(--text-3); }
+    .car-row-img img { width:100%; height:100%; object-fit:cover; }
+    .car-row-info { flex:1; min-width:0; }
+    .car-row-name { font-size:14px; font-weight:600; }
+    .car-row-meta { font-size:12px; color:var(--text-3); margin-top:2px; }
+    .car-row-actions { display:flex; gap:8px; flex-shrink:0; }
+    .badge { display:inline-flex; align-items:center; gap:4px; padding:3px 8px; border-radius:999px; font-size:11px; font-weight:500; }
+    .badge-green { background:var(--green-light); color:var(--green); }
+    .badge-gray { background:var(--card-alt); color:var(--text-3); }
+    .badge-red { background:var(--red-light); color:#ff6b6b; }
+    .price-badge { font-size:12px; color:var(--red); font-weight:600; margin-left:8px; }
+
+    /* MODAL */
+    .modal-overlay { position:fixed; inset:0; z-index:500; display:flex; align-items:center; justify-content:center; padding:16px; background:rgba(0,0,0,.8); backdrop-filter:blur(4px); }
+    .modal-box { background:var(--card); border:1px solid var(--border); border-radius:16px; width:100%; max-width:720px; max-height:90vh; overflow-y:auto; }
+    .modal-head { display:flex; align-items:center; justify-content:space-between; padding:20px 24px; border-bottom:1px solid var(--border); position:sticky; top:0; background:var(--card); z-index:1; }
+    .modal-head h2 { font-size:16px; font-weight:600; }
+    .modal-body { padding:24px; }
+    .modal-foot { display:flex; justify-content:flex-end; gap:10px; padding:16px 24px; border-top:1px solid var(--border); }
+
+    /* UPLOAD ZONE */
+    .upload-zone { border:2px dashed var(--border); border-radius:10px; padding:32px; text-align:center;
+      cursor:pointer; transition:all .2s; }
+    .upload-zone:hover, .upload-zone.drag { border-color:var(--red); background:var(--red-light); }
+    .upload-zone p { font-size:13px; color:var(--text-3); margin-top:8px; }
+    .upload-progress { margin-top:12px; font-size:12px; color:var(--text-2); display:none; }
+
+    /* IMAGE GRID */
+    .img-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(120px,1fr)); gap:10px; margin-top:12px; }
+    .img-item { position:relative; border-radius:8px; overflow:hidden; aspect-ratio:3/2; border:2px solid transparent; transition:border-color .2s; }
+    .img-item.is-main { border-color:var(--red); }
+    .img-item img { width:100%; height:100%; object-fit:cover; }
+    .img-item-actions { position:absolute; inset:0; background:rgba(0,0,0,.6); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; opacity:0; transition:opacity .2s; }
+    .img-item:hover .img-item-actions { opacity:1; }
+    .img-main-badge { position:absolute; top:4px; left:4px; background:var(--red); color:#fff; font-size:9px; padding:2px 6px; border-radius:4px; font-weight:600; }
+
+    /* PRICES */
+    .prices-list { display:flex; flex-direction:column; gap:8px; }
+    .price-row { display:grid; grid-template-columns:1fr 100px 32px; gap:8px; align-items:center; }
+
+    /* TOAST */
+    .toast-wrap { position:fixed; bottom:24px; right:24px; z-index:999; display:flex; flex-direction:column; gap:8px; pointer-events:none; }
+    .toast { background:var(--card); border:1px solid var(--border); border-radius:10px; padding:12px 16px;
+      font-size:13px; display:flex; align-items:center; gap:10px; min-width:240px;
+      box-shadow:0 8px 32px rgba(0,0,0,.4); animation:slideIn .3s ease; pointer-events:all; }
+    .toast.success { border-color:var(--green); }
+    .toast.error { border-color:var(--red); }
+    @keyframes slideIn { from{transform:translateX(100%);opacity:0} to{transform:none;opacity:1} }
+
+    /* MISC */
+    .sep { height:1px; background:var(--border); margin:20px 0; }
+    .loading { display:flex; align-items:center; gap:10px; color:var(--text-3); padding:40px 0; font-size:13px; }
+    .spinner { width:16px; height:16px; border:2px solid var(--border); border-top-color:var(--red); border-radius:50%; animation:spin .7s linear infinite; flex-shrink:0; }
+    @keyframes spin { to{transform:rotate(360deg)} }
+    .empty { text-align:center; padding:60px 0; color:var(--text-3); font-size:13px; }
+    .confirm-msg { font-size:14px; color:var(--text-2); margin:8px 0 20px; }
+    .section-sep { font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--text-3); font-weight:500; margin:20px 0 12px; }
+  </style>
+</head>
+<body>
+
+<!-- ── LOGIN ─────────────────────────────────────── -->
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="login-logo"><span>DC</span> AutoHire</div>
+    <div class="login-sub">Panoul de administrare</div>
+    <div class="login-err" id="loginErr"></div>
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div class="form-group">
+        <label class="form-label">Utilizator</label>
+        <input id="loginUser" class="form-input" type="text" placeholder="admin" autocomplete="username">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Parolă</label>
+        <input id="loginPass" class="form-input" type="password" placeholder="••••••••" autocomplete="current-password">
+      </div>
+      <button class="btn btn-primary" style="width:100%;margin-top:8px" onclick="doLogin()">Intră în cont</button>
+    </div>
+    <div style="margin-top:16px;font-size:11px;color:var(--text-3);text-align:center">
+      <a href="/" style="color:var(--text-3);text-decoration:underline">← Înapoi la site</a>
+    </div>
+  </div>
+</div>
+
+<!-- ── APP ───────────────────────────────────────── -->
+<div id="app">
+  <div class="layout">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <div class="name"><span>DC</span> AutoHire</div>
+        <div class="sub">Admin Panel</div>
+      </div>
+      <nav class="sidebar-nav">
+        <button class="nav-item active" data-page="cars" onclick="setPage('cars')">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+          Mașini
+        </button>
+        <button class="nav-item" data-page="settings" onclick="setPage('settings')">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          Setări
+        </button>
+        <a href="/" target="_blank" class="nav-item" style="margin-top:auto">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          Deschide site-ul
+        </a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="sidebar-user" id="sidebarUser"></div>
+        <button class="btn-logout" onclick="doLogout()">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          Ieși din cont
+        </button>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main">
+
+      <!-- PAGE: MAȘINI -->
+      <div class="page active" id="page-cars">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:28px">
+          <div>
+            <div class="page-title">Mașini</div>
+            <div class="page-sub">Gestionează flota DC AutoHire</div>
+          </div>
+          <button class="btn btn-primary" onclick="openCarModal()">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" style="display:inline;margin-right:6px;vertical-align:-2px"><path d="M12 5v14M5 12h14"/></svg>
+            Adaugă mașină
+          </button>
+        </div>
+        <div id="carsList"><div class="loading"><div class="spinner"></div> Se încarcă...</div></div>
+      </div>
+
+      <!-- PAGE: SETĂRI -->
+      <div class="page" id="page-settings">
+        <div class="page-title">Setări</div>
+        <div class="page-sub" style="margin-bottom:28px">Gestionează contul tău de admin</div>
+        <div class="card" style="max-width:440px">
+          <div class="card-title" style="margin-bottom:16px">Schimbă parola</div>
+          <div style="display:flex;flex-direction:column;gap:12px">
+            <div class="form-group">
+              <label class="form-label">Parola curentă</label>
+              <input id="curPass" class="form-input" type="password" placeholder="••••••••">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Parola nouă</label>
+              <input id="newPass" class="form-input" type="password" placeholder="Minim 6 caractere">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Confirmă parola nouă</label>
+              <input id="confPass" class="form-input" type="password" placeholder="Repetă parola">
+            </div>
+            <button class="btn btn-primary" style="align-self:flex-start" onclick="changePassword()">Salvează parola</button>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- ── MODAL MAȘINĂ ──────────────────────────────── -->
+<div class="modal-overlay" id="carModal" style="display:none" onclick="closeCarModal(event)">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <div class="modal-head">
+      <h2 id="modalTitle">Adaugă mașină</h2>
+      <button class="btn btn-secondary btn-sm btn-icon" onclick="closeCarModal()">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="editId">
+
+      <div class="section-sep">Informații de bază</div>
+      <div class="form-grid" style="margin-bottom:12px">
+        <div class="form-group">
+          <label class="form-label">Nume mașină *</label>
+          <input id="fName" class="form-input" placeholder="ex: VW Golf 7 GTE">
+        </div>
+        <div class="form-group">
+          <label class="form-label">An fabricație *</label>
+          <input id="fYear" class="form-input" type="number" placeholder="2020" min="1990" max="2030">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Putere *</label>
+          <input id="fPower" class="form-input" placeholder="150 CP">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Combustibil *</label>
+          <select id="fFuel" class="form-input">
+            <option>Benzina</option><option>Diesel</option><option>Hybrid</option>
+            <option>Plug-in Hybrid</option><option>Electric</option><option>GPL</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Transmisie *</label>
+          <input id="fGearbox" class="form-input" placeholder="Automata DSG">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Caroserie *</label>
+          <select id="fBodyType" class="form-input">
+            <option>Hatchback</option><option>Sedan</option><option>SUV</option>
+            <option>Combi</option><option>Coupe</option><option>Cabrio</option><option>Minivan</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="section-sep">Specificații tehnice</div>
+      <div class="form-grid" style="margin-bottom:12px">
+        <div class="form-group">
+          <label class="form-label">Motor</label>
+          <input id="fEngine" class="form-input" placeholder="1.4 TSI + Electric">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Tracțiune</label>
+          <select id="fDrive" class="form-input">
+            <option>FWD</option><option>RWD</option><option>AWD 4x4</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Locuri</label>
+          <input id="fSeats" class="form-input" type="number" value="5" min="2" max="9">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Consum mediu</label>
+          <input id="fConsumption" class="form-input" placeholder="5–6 L/100km">
+        </div>
+      </div>
+
+      <div class="form-group" style="margin-bottom:16px">
+        <label class="form-label">Descriere</label>
+        <textarea id="fDesc" class="form-input" rows="3" placeholder="Descriere scurtă a mașinii..."></textarea>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
+        <input type="checkbox" id="fActive" checked style="accent-color:var(--red);width:16px;height:16px">
+        <label for="fActive" class="form-label" style="margin:0;cursor:pointer">Vizibil pe site</label>
+      </div>
+
+      <div class="section-sep">Prețuri</div>
+      <div class="prices-list" id="pricesList"></div>
+      <button class="btn btn-secondary btn-sm" style="margin-top:10px" onclick="addPriceRow()">
+        + Adaugă interval
+      </button>
+
+      <div class="section-sep" id="imgSectionLabel">Poze</div>
+      <div id="imgGrid" class="img-grid"></div>
+      <div class="upload-zone" id="uploadZone" onclick="document.getElementById('imgInput').click()" style="margin-top:12px">
+        <svg width="32" height="32" fill="none" stroke="var(--text-3)" stroke-width="1.5" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        <p>Click sau trage pozele aici<br><span style="font-size:11px">JPG, PNG – max 10MB per poză</span></p>
+        <div class="upload-progress" id="uploadProgress"></div>
+      </div>
+      <input type="file" id="imgInput" accept="image/*" multiple style="display:none" onchange="uploadImages(this.files)">
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-secondary" onclick="closeCarModal()">Anulează</button>
+      <button class="btn btn-primary" onclick="saveCar()" id="saveBtn">Salvează mașina</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── CONFIRM DIALOG ────────────────────────────── -->
+<div class="modal-overlay" id="confirmDialog" style="display:none" onclick="closeConfirm(event)">
+  <div class="modal-box" onclick="event.stopPropagation()" style="max-width:380px">
+    <div class="modal-head"><h2 id="confirmTitle">Confirmare</h2></div>
+    <div class="modal-body">
+      <p class="confirm-msg" id="confirmMsg"></p>
+      <div style="display:flex;gap:10px;justify-content:flex-end">
+        <button class="btn btn-secondary" onclick="closeConfirm()">Anulează</button>
+        <button class="btn btn-danger" id="confirmBtn">Șterge</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── TOASTS ─────────────────────────────────────── -->
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script>
+let currentEditId = null;
+let currentPriceCount = 0;
+
+// ── IMAGE URL HELPERS ─────────────────────────────────
+// Images are stored as JSON in filename: {filename, url, thumb_url}
+function getImgUrl(img) {
+  try { return JSON.parse(img.filename).url; } catch { return img.url || ''; }
+}
+function getThumbUrl(img) {
+  try { return JSON.parse(img.filename).thumb_url; } catch { return img.url || ''; }
+}
+
+// ── JWT HELPERS ───────────────────────────────────────
+function getToken() { return localStorage.getItem('admin_token'); }
+function setToken(t) { localStorage.setItem('admin_token', t); }
+function clearToken() { localStorage.removeItem('admin_token'); }
+
+// Drop-in fetch replacement that injects Authorization header
+async function authFetch(url, opts = {}) {
+  const token = getToken();
+  opts.headers = opts.headers || {};
+  if (token) opts.headers['Authorization'] = 'Bearer ' + token;
+  return fetch(url, opts);
+}
+
+// ── AUTH ──────────────────────────────────────────────
+async function init() {
+  try {
+    const res = await authFetch('/api/admin/me');
+    if (res.ok) {
+      const data = await res.json();
+      document.getElementById('loginScreen').style.display = 'none';
+      document.getElementById('app').style.display = 'block';
+      document.getElementById('sidebarUser').textContent = '👤 ' + data.username;
+      loadCars();
+    }
+  } catch(e) {}
+}
+
+async function doLogin() {
+  const username = document.getElementById('loginUser').value.trim();
+  const password = document.getElementById('loginPass').value;
+  const err = document.getElementById('loginErr');
+  if (!username || !password) { err.textContent = 'Completează toate câmpurile'; err.style.display = 'block'; return; }
+  try {
+    const res = await authFetch('/api/admin/login', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({username,password}) });
+    const data = await res.json();
+    if (!res.ok) { err.textContent = data.error || 'Eroare'; err.style.display = 'block'; return; }
+    setToken(data.token);
+    err.style.display = 'none';
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    document.getElementById('sidebarUser').textContent = '👤 ' + data.username;
+    loadCars();
+  } catch(e) { err.textContent = 'Eroare de conexiune'; err.style.display = 'block'; }
+}
+
+async function doLogout() {
+  clearToken();
+  location.reload();
+}
+
+document.getElementById('loginPass').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
+
+// ── PAGES ─────────────────────────────────────────────
+function setPage(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item[data-page]').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  document.querySelector(`[data-page="${page}"]`)?.classList.add('active');
+}
+
+// ── LOAD CARS ─────────────────────────────────────────
+async function loadCars() {
+  try {
+    const res = await authFetch('/api/admin/cars');
+    const cars = await res.json();
+    renderCarsList(cars);
+  } catch(e) {
+    document.getElementById('carsList').innerHTML = '<div class="empty">Eroare la încărcare</div>';
+  }
+}
+
+function renderCarsList(cars) {
+  const el = document.getElementById('carsList');
+  if (!cars.length) {
+    el.innerHTML = '<div class="empty">Nicio mașină adăugată. Apasă "Adaugă mașină" pentru a începe.</div>';
+    return;
+  }
+  el.innerHTML = `<div class="car-list">${cars.map(car => {
+    const mainImg = car.images?.find(i=>i.is_main) || car.images?.[0];
+    const minPrice = car.prices?.length ? Math.min(...car.prices.map(p=>p.price)) : null;
+    return `
+      <div class="car-row" id="car-row-${car.id}">
+        <div class="car-row-img">
+          ${mainImg ? `<img src="${getThumbUrl(mainImg)}" alt="${car.name}">` : `<svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>`}
+        </div>
+        <div class="car-row-info">
+          <div class="car-row-name">${car.name} <span class="badge ${car.active ? 'badge-green' : 'badge-gray'}">${car.active ? '● Activ' : '● Inactiv'}</span>${minPrice ? `<span class="price-badge">de la ${minPrice}€/zi</span>` : ''}</div>
+          <div class="car-row-meta">${car.year} · ${car.power} · ${car.fuel} · ${car.images?.length || 0} poze</div>
+        </div>
+        <div class="car-row-actions">
+          <button class="btn btn-secondary btn-sm btn-icon" title="Editează" onclick="openCarModal(${car.id})">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          </button>
+          <button class="btn btn-secondary btn-sm btn-icon" title="${car.active ? 'Dezactivează' : 'Activează'}" onclick="toggleCar(${car.id})">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+          <button class="btn btn-danger btn-sm btn-icon" title="Șterge" onclick="confirmDelete(${car.id}, '${car.name.replace(/'/g,"\\'")}')">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+          </button>
+        </div>
+      </div>`;
+  }).join('')}</div>`;
+}
+
+// ── OPEN MODAL ────────────────────────────────────────
+async function openCarModal(id = null) {
+  currentEditId = id;
+  currentPriceCount = 0;
+  document.getElementById('modalTitle').textContent = id ? 'Editează mașina' : 'Adaugă mașină nouă';
+  document.getElementById('editId').value = id || '';
+  document.getElementById('imgSectionLabel').style.display = id ? 'block' : 'none';
+  document.getElementById('imgGrid').innerHTML = '';
+  resetForm();
+
+  if (id) {
+    try {
+      const res = await authFetch(`/api/admin/cars/${id}`);
+      const car = await res.json();
+      document.getElementById('fName').value = car.name;
+      document.getElementById('fYear').value = car.year;
+      document.getElementById('fPower').value = car.power;
+      document.getElementById('fFuel').value = car.fuel;
+      document.getElementById('fGearbox').value = car.gearbox;
+      document.getElementById('fBodyType').value = car.body_type;
+      document.getElementById('fEngine').value = car.engine || '';
+      document.getElementById('fDrive').value = car.drive || 'FWD';
+      document.getElementById('fSeats').value = car.seats;
+      document.getElementById('fConsumption').value = car.consumption || '';
+      document.getElementById('fDesc').value = car.description || '';
+      document.getElementById('fActive').checked = !!car.active;
+      renderPrices(car.prices || []);
+      renderImgGrid(car.images || [], id);
+    } catch(e) { toast('Eroare la încărcare', 'error'); return; }
+  } else {
+    renderPrices([
+      {period:'1–2 zile', price:50}, {period:'3–5 zile', price:45},
+      {period:'6–10 zile', price:40}, {period:'11–20 zile', price:35}, {period:'21+ zile', price:30}
+    ]);
+  }
+
+  document.getElementById('carModal').style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+
+function closeCarModal(e) {
+  if (e && e.target !== document.getElementById('carModal')) return;
+  document.getElementById('carModal').style.display = 'none';
+  document.body.style.overflow = '';
+  currentEditId = null;
+}
+
+function resetForm() {
+  ['fName','fYear','fPower','fGearbox','fEngine','fConsumption','fDesc'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  document.getElementById('fFuel').value = 'Benzina';
+  document.getElementById('fBodyType').value = 'Hatchback';
+  document.getElementById('fDrive').value = 'FWD';
+  document.getElementById('fSeats').value = '5';
+  document.getElementById('fActive').checked = true;
+  document.getElementById('pricesList').innerHTML = '';
+  currentPriceCount = 0;
+}
+
+// ── PRICES ────────────────────────────────────────────
+function renderPrices(prices) {
+  document.getElementById('pricesList').innerHTML = '';
+  currentPriceCount = 0;
+  for (const p of prices) addPriceRow(p.period, p.price);
+}
+
+function addPriceRow(period = '', price = '') {
+  const i = currentPriceCount++;
+  const row = document.createElement('div');
+  row.className = 'price-row';
+  row.id = `pr-${i}`;
+  row.innerHTML = `
+    <input class="form-input" id="pp-${i}" value="${period}" placeholder="ex: 1–3 zile">
+    <input class="form-input" id="pv-${i}" type="number" value="${price}" placeholder="€" min="0">
+    <button class="btn btn-danger btn-sm btn-icon" onclick="document.getElementById('pr-${i}').remove()">
+      <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>`;
+  document.getElementById('pricesList').appendChild(row);
+}
+
+function getPrices() {
+  const prices = [];
+  document.querySelectorAll('#pricesList .price-row').forEach(row => {
+    const id = row.id.replace('pr-','');
+    const period = document.getElementById(`pp-${id}`)?.value?.trim();
+    const price = parseInt(document.getElementById(`pv-${id}`)?.value);
+    if (period && price > 0) prices.push({period, price});
+  });
+  return prices;
+}
+
+// ── SAVE CAR ──────────────────────────────────────────
+async function saveCar() {
+  const id = document.getElementById('editId').value;
+  const body = {
+    name: document.getElementById('fName').value.trim(),
+    year: parseInt(document.getElementById('fYear').value),
+    power: document.getElementById('fPower').value.trim(),
+    fuel: document.getElementById('fFuel').value,
+    gearbox: document.getElementById('fGearbox').value.trim(),
+    body_type: document.getElementById('fBodyType').value,
+    engine: document.getElementById('fEngine').value.trim(),
+    drive: document.getElementById('fDrive').value,
+    seats: parseInt(document.getElementById('fSeats').value),
+    consumption: document.getElementById('fConsumption').value.trim(),
+    description: document.getElementById('fDesc').value.trim(),
+    active: document.getElementById('fActive').checked,
+    prices: getPrices()
+  };
+
+  if (!body.name || !body.year || !body.power || !body.fuel || !body.gearbox || !body.body_type) {
+    toast('Completează toate câmpurile obligatorii (*)', 'error'); return;
+  }
+
+  const btn = document.getElementById('saveBtn');
+  btn.disabled = true; btn.textContent = 'Se salvează...';
+
+  try {
+    const res = await authFetch(id ? `/api/admin/cars/${id}` : '/api/admin/cars', {
+      method: id ? 'PUT' : 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify(body)
+    });
+    if (!res.ok) { const d = await res.json(); throw new Error(d.error); }
+    toast(id ? 'Mașina a fost actualizată!' : 'Mașina a fost adăugată!', 'success');
+    closeCarModal();
+    loadCars();
+  } catch(e) {
+    toast(e.message || 'Eroare la salvare', 'error');
+  } finally {
+    btn.disabled = false; btn.textContent = 'Salvează mașina';
+  }
+}
+
+// ── TOGGLE ACTIVE ─────────────────────────────────────
+async function toggleCar(id) {
+  try {
+    await authFetch(`/api/admin/cars/${id}/toggle`, {method:'PATCH'});
+    loadCars();
+  } catch(e) { toast('Eroare', 'error'); }
+}
+
+// ── DELETE ────────────────────────────────────────────
+let pendingDeleteId = null;
+function confirmDelete(id, name) {
+  pendingDeleteId = id;
+  document.getElementById('confirmMsg').textContent = `Ești sigur că vrei să ștergi "${name}"? Această acțiune nu poate fi anulată.`;
+  document.getElementById('confirmBtn').onclick = deleteCar;
+  document.getElementById('confirmDialog').style.display = 'flex';
+}
+function closeConfirm(e) {
+  if (e && e.target !== document.getElementById('confirmDialog')) return;
+  document.getElementById('confirmDialog').style.display = 'none';
+  pendingDeleteId = null;
+}
+async function deleteCar() {
+  if (!pendingDeleteId) return;
+  try {
+    await authFetch(`/api/admin/cars/${pendingDeleteId}`, {method:'DELETE'});
+    toast('Mașina a fost ștearsă', 'success');
+    closeConfirm();
+    loadCars();
+  } catch(e) { toast('Eroare la ștergere', 'error'); }
+}
+
+// ── IMAGE GRID ────────────────────────────────────────
+function renderImgGrid(images, carId) {
+  const grid = document.getElementById('imgGrid');
+  if (!images.length) { grid.innerHTML = ''; return; }
+  grid.innerHTML = images.map(img => `
+    <div class="img-item ${img.is_main?'is-main':''}" id="img-${img.id}">
+      <img src="${getThumbUrl(img)}" alt="">
+      ${img.is_main ? '<div class="img-main-badge">PRINCIPAL</div>' : ''}
+      <div class="img-item-actions">
+        ${!img.is_main ? `<button class="btn btn-secondary btn-sm" onclick="setMainImg(${img.id},${carId})" style="font-size:11px;padding:4px 8px">Set principal</button>` : ''}
+        <button class="btn btn-danger btn-sm" onclick="deleteImg(${img.id},${carId})" style="font-size:11px;padding:4px 8px">Șterge</button>
+      </div>
+    </div>`).join('');
+}
+
+async function setMainImg(imgId, carId) {
+  try {
+    await authFetch(`/api/admin/images/${imgId}/main`, {method:'PATCH'});
+    const res = await authFetch(`/api/admin/cars/${carId}`);
+    const car = await res.json();
+    renderImgGrid(car.images, carId);
+    toast('Imagine principală setată', 'success');
+  } catch(e) { toast('Eroare', 'error'); }
+}
+
+async function deleteImg(imgId, carId) {
+  try {
+    await authFetch(`/api/admin/images/${imgId}`, {method:'DELETE'});
+    const res = await authFetch(`/api/admin/cars/${carId}`);
+    const car = await res.json();
+    renderImgGrid(car.images, carId);
+    toast('Imagine ștearsă', 'success');
+  } catch(e) { toast('Eroare', 'error'); }
+}
+
+// ── UPLOAD IMAGES ─────────────────────────────────────
+async function uploadImages(files) {
+  const carId = document.getElementById('editId').value;
+  if (!carId) { toast('Salvează mai întâi mașina, apoi adaugă poze', 'error'); return; }
+  if (!files?.length) return;
+
+  const progress = document.getElementById('uploadProgress');
+  progress.style.display = 'block';
+  progress.textContent = `Se uploadează ${files.length} ${files.length===1?'poză':'poze'}...`;
+
+  const fd = new FormData();
+  for (const f of files) fd.append('images', f);
+
+  try {
+    const res = await authFetch(`/api/admin/cars/${carId}/images`, {method:'POST', body:fd});
+    if (!res.ok) { const d = await res.json(); throw new Error(d.error); }
+    const result = await res.json();
+    // Reload images
+    const carRes = await authFetch(`/api/admin/cars/${carId}`);
+    const car = await carRes.json();
+    renderImgGrid(car.images, carId);
+    toast(`${result.length} ${result.length===1?'poză uploadată':'poze uploadate'} cu succes!`, 'success');
+    loadCars();
+  } catch(e) {
+    toast(e.message || 'Eroare la upload', 'error');
+  } finally {
+    progress.style.display = 'none';
+    document.getElementById('imgInput').value = '';
+  }
+}
+
+// Drag & drop
+const zone = document.getElementById('uploadZone');
+zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag'); });
+zone.addEventListener('dragleave', () => zone.classList.remove('drag'));
+zone.addEventListener('drop', e => { e.preventDefault(); zone.classList.remove('drag'); uploadImages(e.dataTransfer.files); });
+
+// ── SETTINGS ──────────────────────────────────────────
+async function changePassword() {
+  const cur = document.getElementById('curPass').value;
+  const nw = document.getElementById('newPass').value;
+  const conf = document.getElementById('confPass').value;
+  if (nw !== conf) { toast('Parolele noi nu coincid', 'error'); return; }
+  if (nw.length < 6) { toast('Parola trebuie să aibă minim 6 caractere', 'error'); return; }
+  try {
+    const res = await authFetch('/api/admin/change-password', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({currentPassword:cur, newPassword:nw})
+    });
+    const d = await res.json();
+    if (!res.ok) throw new Error(d.error);
+    toast('Parola a fost schimbată cu succes!', 'success');
+    ['curPass','newPass','confPass'].forEach(id => document.getElementById(id).value='');
+  } catch(e) { toast(e.message || 'Eroare', 'error'); }
+}
+
+// ── TOAST ─────────────────────────────────────────────
+function toast(msg, type = 'success') {
+  const wrap = document.getElementById('toastWrap');
+  const el = document.createElement('div');
+  el.className = `toast ${type}`;
+  el.innerHTML = `
+    <svg width="16" height="16" fill="none" stroke="${type==='success'?'var(--green)':'#ff6b6b'}" stroke-width="2" viewBox="0 0 24 24">
+      ${type==='success' ? '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>' : '<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>'}
+    </svg>
+    ${msg}`;
+  wrap.appendChild(el);
+  setTimeout(() => el.remove(), 3500);
+}
+
+// ── KEYBOARD ──────────────────────────────────────────
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    closeCarModal();
+    closeConfirm();
+  }
+});
+
+init();
+</script>
+</body>
+</html>
